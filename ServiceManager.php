@@ -28,7 +28,7 @@ class Decorator
     public $protoName;
 
     private static $pointCuts = [];
-    private static $pointCutHash = [];
+    private static $pointCutsHash = [];
 
     protected function genPointCuts()
     {
@@ -45,45 +45,52 @@ class Decorator
         $this->genPointCuts();
     }
 
-    protected function getPointCut($m)
+    protected function getPointCuts($m)
     {
-        if (isset(self::$pointCutHash[$this->protoName . '|' . $m])) {
-            return self::$pointCutHash[$this->protoName . '|' . $m];
+        if (isset(self::$pointCutsHash[$this->protoName . '|' . $m])) {
+            return self::$pointCutsHash[$this->protoName . '|' . $m];
         }
+
+        self::$pointCutsHash[$this->protoName . '|' . $m] = [];
 
         foreach (self::$pointCuts as $pointCut) {
             if (preg_match($pointCut[0], $this->protoName) and preg_match($pointCut[1], $m)) {
-                self::$pointCutHash[$this->protoName . '|' . $m] = $pointCut;
-                return $pointCut;
+                if (!isset(self::$pointCutsHash[$this->protoName . '|' . $m][$pointCut[2]])) {
+                    self::$pointCutsHash[$this->protoName . '|' . $m][$pointCut[2]] = $pointCut;
+                }
             }
         }
-        self::$pointCutHash[$this->protoName . '|' . $m] = false;
-        return false;
+
+        return self::$pointCutsHash[$this->protoName . '|' . $m];
     }
 
     public function __call($m, $a)
     {
-        $pc = $this->getPointCut($m);
+        $pc = $this->getPointCuts($m);
 
         if ($pc) {
             //round point
-            if ($pc[2] == 'round') {
-                $pc[3]($m);
+            if (isset($pc['round'])) {
+                $pc['round'][3]($m);
             }
-            //before point
-            if ($pc[2] == 'before') {
-                $pc[3]($m);
-            }
-            $result = call_user_func_array([$this->proto, $m], $a);
-            //after point
 
-            if ($pc[2] == 'after') {
-                $pc[3]($m);
+            //before point
+            if (isset($pc['before'])) {
+                $pc['before'][3]($m);
             }
+
+            $result = call_user_func_array([$this->proto, $m], $a);
+
+            //after point
+            if (isset($pc['after'])) {
+                $pc['after'][3]($m);
+            }
+
             //round point
-            if ($pc[2] == 'round') {
-                $pc[3]($m);
+            if (isset($pc['round'])) {
+                $pc['round'][3]($m);
             }
+
             return $result;
         } else {
             return call_user_func_array([$this->proto, $m], $a);
