@@ -6,7 +6,7 @@ use Phalcon\Mvc\User\Component;
 
 class ServiceManager extends Component
 {
-    public static $services = [];
+    protected static $services = [];
 
     public function getService($serviceName, $nameSpace = 'xx\yy\Service')
     {
@@ -94,5 +94,4 @@ class Decorator
             return call_user_func_array([$this->proto, $m], $a);
         }
     }
-
 }
