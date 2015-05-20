@@ -48,11 +48,7 @@ class Decorator
     protected function getPointCut($m)
     {
         if (isset(self::$pointCutHash[$this->protoName . '|' . $m])) {
-            if (self::$pointCutHash[$this->protoName . '|' . $m]) {
-                return self::$pointCutHash[$this->protoName . '|' . $m];
-            } else {
-                return false;
-            }
+            return self::$pointCutHash[$this->protoName . '|' . $m];
         }
 
         foreach (self::$pointCuts as $pointCut) {
@@ -61,7 +57,7 @@ class Decorator
                 return $pointCut;
             }
         }
-
+        self::$pointCutHash[$this->protoName . '|' . $m] = false;
         return false;
     }
 
@@ -90,7 +86,6 @@ class Decorator
             }
             return $result;
         } else {
-            self::$pointCutHash[$this->protoName . '|' . $m] = false;
             return call_user_func_array([$this->proto, $m], $a);
         }
     }
