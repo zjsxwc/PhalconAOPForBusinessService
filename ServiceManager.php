@@ -71,24 +71,24 @@ class Decorator
         if ($pc) {
             //round point
             if (isset($pc['round'])) {
-                $pc['round'][3]($m);
+                $pc['round'][3]($m, $a);
             }
 
             //before point
             if (isset($pc['before'])) {
-                $pc['before'][3]($m);
+                $pc['before'][3]($m, $a);
             }
 
             $result = call_user_func_array([$this->proto, $m], $a);
 
             //after point
             if (isset($pc['after'])) {
-                $pc['after'][3]($m);
+                $pc['after'][3]($m, $a);
             }
 
             //round point
             if (isset($pc['round'])) {
-                $pc['round'][3]($m);
+                $pc['round'][3]($m, $a);
             }
 
             return $result;

@@ -5,7 +5,7 @@ return [
         '/.*SomeService/',
         '/create|update|delete/', //point
         'after',
-        function ($m) { //advice
+        function ($m, $a) { //advice
             //DO LOG
         },
     ],
