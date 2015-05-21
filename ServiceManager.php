@@ -55,9 +55,7 @@ class Decorator
 
         foreach (self::$pointCuts as $pointCut) {
             if (preg_match($pointCut[0], $this->protoName) and preg_match($pointCut[1], $m)) {
-                if (!isset(self::$pointCutsHash[$this->protoName . '|' . $m][$pointCut[2]])) {
-                    self::$pointCutsHash[$this->protoName . '|' . $m][$pointCut[2]] = $pointCut;
-                }
+                self::$pointCutsHash[$this->protoName . '|' . $m][$pointCut[2]][] = $pointCut;
             }
         }
 
@@ -71,24 +69,32 @@ class Decorator
         if ($pc) {
             //round point
             if (isset($pc['round'])) {
-                $pc['round'][3]($m, $a);
+                foreach ($pc['round'] as $pc) {
+                    $pc[3]($m, $a);
+                }
             }
 
             //before point
             if (isset($pc['before'])) {
-                $pc['before'][3]($m, $a);
+                foreach ($pc['before'] as $pc) {
+                    $pc[3]($m, $a);
+                }
             }
 
             $result = call_user_func_array([$this->proto, $m], $a);
 
             //after point
             if (isset($pc['after'])) {
-                $pc['after'][3]($m, $a);
+                foreach ($pc['after'] as $pc) {
+                    $pc[3]($m, $a, $result);
+                }
             }
 
             //round point
             if (isset($pc['round'])) {
-                $pc['round'][3]($m, $a);
+                foreach ($pc['round'] as $pc) {
+                    $pc[3]($m, $a, $result);
+                }
             }
 
             return $result;
