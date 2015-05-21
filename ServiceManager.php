@@ -64,19 +64,19 @@ class Decorator
 
     public function __call($m, $a)
     {
-        $pc = $this->getPointCuts($m);
+        $pcs = $this->getPointCuts($m);
 
-        if ($pc) {
+        if ($pcs) {
             //round point
-            if (isset($pc['round'])) {
-                foreach ($pc['round'] as $pc) {
+            if (isset($pcs['round'])) {
+                foreach ($pcs['round'] as $pc) {
                     $pc[3]($m, $a);
                 }
             }
 
             //before point
-            if (isset($pc['before'])) {
-                foreach ($pc['before'] as $pc) {
+            if (isset($pcs['before'])) {
+                foreach ($pcs['before'] as $pc) {
                     $pc[3]($m, $a);
                 }
             }
@@ -84,15 +84,15 @@ class Decorator
             $result = call_user_func_array([$this->proto, $m], $a);
 
             //after point
-            if (isset($pc['after'])) {
-                foreach ($pc['after'] as $pc) {
+            if (isset($pcs['after'])) {
+                foreach ($pcs['after'] as $pc) {
                     $pc[3]($m, $a, $result);
                 }
             }
 
             //round point
-            if (isset($pc['round'])) {
-                foreach ($pc['round'] as $pc) {
+            if (isset($pcs['round'])) {
+                foreach ($pcs['round'] as $pc) {
                     $pc[3]($m, $a, $result);
                 }
             }
